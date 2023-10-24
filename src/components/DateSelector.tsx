@@ -19,32 +19,39 @@ const DateSelector = ({ year, month, day, setDate }: Props) => {
         setDate({ year: ymd[0], month: ymd[1], day: ymd[2] });
     }
 
-    return (<Dropdown selected={`${year}-${month}-${day}`} onSelect={onSelect}>
-        <Dropdown.Trigger />
-        <Dropdown.Menu as={
-            <CalendarMenu days={days}>{ }</CalendarMenu>
-        }>
-            {calendar.map((item, index) => {
-                return (
-                    <tr key={`calendar_item_${index}`}>
-                        {item.map((day) => {
-                            return (
-                                <Dropdown.Item
-                                    key={day.toDateString()}
-                                    as={<StyledCell $clickable></StyledCell>}
-                                    value={`${day.getFullYear()}-${day.getMonth() + 1}-${day.getDate()}`}>
-                                    <DateText
-                                        $isThisMonth={day.getMonth() + 1 === month}
-                                        $isWeekend={day.getDay() === 0 || day.getDay() === 6}
-                                    >{day.getDate()}</DateText>
-                                </Dropdown.Item>
-                            )
-                        })}
-                    </tr>
-                )
-            })}
-        </Dropdown.Menu>
-    </Dropdown>)
+    return (
+        <RelativeContainer>
+            <Dropdown selected={`${year}-${month}-${day}`} onSelect={onSelect}>
+                <Dropdown.Trigger as={<DateDisplay>{`${year}-${month}-${day}`}</DateDisplay>} />
+                <Dropdown.Menu as={
+                    <CalendarMenu days={days}>{ }</CalendarMenu>
+                }>
+                    {calendar.map((item, index) => {
+                        return (
+                            <tr key={`calendar_item_${index}`}>
+                                {item.map((day) => {
+                                    return (
+                                        <Dropdown.Item
+                                            key={day.toDateString()}
+                                            as={<StyledCell $clickable></StyledCell>}
+                                            value={`${day.getFullYear()}-${day.getMonth() + 1}-${day.getDate()}`}
+                                        >
+                                            <DateText
+                                                $isThisMonth={day.getMonth() + 1 === month}
+                                                $isWeekend={day.getDay() === 0 || day.getDay() === 6}
+                                            >
+                                                {day.getDate()}
+                                            </DateText>
+                                        </Dropdown.Item>
+                                    )
+                                })}
+                            </tr>
+                        )
+                    })}
+                </Dropdown.Menu>
+            </Dropdown>
+        </RelativeContainer>
+    )
 }
 
 export default DateSelector;
@@ -69,11 +76,40 @@ const CalendarMenu = ({ days, children }: { days: string[], children: ReactNode 
     )
 }
 
+const RelativeContainer = styled.div`
+  position: relative;
+  display: inline-block;
+`;
+
+const DateDisplay = styled.button`
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #f4f4f4;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+
+  &:hover {
+    background-color: #e9e9e9;
+  }
+`;
+
 const Table = styled.table`
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+
     width: 100%;
-    max-width: 80%; 
+    min-width: 40rem; 
     border-collapse: collapse;
     margin: 20px auto;
+
+    z-index: 1000;
 `
 
 const THead = styled.thead`

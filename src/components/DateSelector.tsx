@@ -2,6 +2,7 @@ import styled from "styled-components";
 import Dropdown from "../ui/Dropdown";
 import useCalendar from "../hooks/useCalendar";
 import { ReactNode } from "react";
+import { RelativeContainer } from "../ui/Container/RelativeContainer";
 
 type Props = {
     year: number,
@@ -75,11 +76,6 @@ const CalendarMenu = ({ days, children }: { days: string[], children: ReactNode 
         </Table>
     )
 }
-
-const RelativeContainer = styled.div`
-  position: relative;
-  display: inline-block;
-`;
 
 const DateDisplay = styled.button`
   display: inline-block;

@@ -8,7 +8,7 @@ const Input = (props: InputProps) => {
     const {title, required} = props;
 
     return (
-        <Container >
+        <Container>
             {title && <Title>{title}{required && <Star>*</Star>}</Title>}
             <input {...props} />
         </Container>

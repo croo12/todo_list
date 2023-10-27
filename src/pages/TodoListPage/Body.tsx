@@ -1,31 +1,9 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import TodoComponent from "../../components/Todo";
-import { Todo } from "../../types/Todo";
 import { FlexContainer } from "../../ui/Container/FlexContainer";
-
-const TodoList: Todo[] = [
-    {
-        id: 1,
-        title: "Todo 1",
-        time: [12, 0],
-        description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quisquam, quibusdam!",
-        completed: false
-    },
-    {
-        id: 2,
-        title: "Todo 2",
-        time: [12, 0],
-        description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quisquam, quibusdam!",
-        completed: true
-    },
-    {
-        id: 3,
-        title: "Todo 3",
-        time: [12, 0],
-        description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quisquam, quibusdam!",
-        completed: false
-    },
-]
+import { invoke } from "@tauri-apps/api/tauri";
+import { Todo } from "../../types/Todo";
+import AddButton from "../../components/AddButton";
 
 interface Props {
     date: {
@@ -36,14 +14,24 @@ interface Props {
 }
 
 const Body = ({ date }: Props) => {
+    const [todoList, setData] = useState<Todo[]>([]);
+
+    const getTodoList = useCallback(async ({ year, month, day }: {
+        year: number,
+        month: number,
+        day: number,
+    }) => {
+        setData(await invoke("get_todo", { year, month, day }));
+    }, [setData]);
 
     useEffect(() => {
-        
-    },[date])
+        getTodoList({ year: date.year, month: date.month, day: date.day });
+    }, [date])
 
     return (
         <FlexContainer>
-            {TodoList.map(todo => <TodoComponent todo={todo}></TodoComponent>)}
+            {todoList.length ? todoList.map(todo => <TodoComponent todo={todo}></TodoComponent>) : <div>텅~</div>}
+            <AddButton date={date} />
         </FlexContainer>
     )
 };

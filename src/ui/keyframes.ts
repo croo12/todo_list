@@ -11,7 +11,7 @@ export const slideDown = keyframes`
   }
 `;
 
-export const expandDown = keyframes`
+export const expandFromDown = keyframes`
   from {
     transform: scaleY(0);
     transform-origin: top;
@@ -20,4 +20,15 @@ export const expandDown = keyframes`
     transform: scaleY(1);
     transform-origin: top;
   }
+`;
+
+export const expandFromRight = keyframes`
+from {
+  transform: scaleX(0);
+  transform-origin: right;
+}
+to {
+  transform: scaleX(1);
+  transform-origin: right;
+}
 `;

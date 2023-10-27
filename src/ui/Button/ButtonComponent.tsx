@@ -1,7 +1,8 @@
-import { HTMLAttributes } from "react";
+import { ButtonHTMLAttributes } from "react";
 import styled from "styled-components"
 
-const ButtonComponent = ({children, ...props}: HTMLAttributes<HTMLButtonElement>) => {
+const ButtonComponent = ({ children, ...props }
+    : React.DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>) => {
     return (
         <StyledButton {...props}>
             {children}

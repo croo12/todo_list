@@ -1,9 +1,9 @@
 import styled from "styled-components"
 import { RelativeContainer } from "../ui/Container/RelativeContainer"
 import Dropdown from "../ui/Dropdown"
-import Input from "../ui/Input/Input";
+import InputComponent from "../ui/Input/InputComponent";
 import { Todo } from "../types/Todo";
-import { expandDown } from "../ui/keyframes";
+import { expandFromDown } from "../ui/keyframes";
 
 interface TodoProps {
     todo: Todo;
@@ -17,8 +17,8 @@ const TodoComponent = ({ todo }: TodoProps) => {
             <Dropdown selected="" onSelect={() => { }}>
                 <Dropdown.Trigger as={<TodoButton $isCompleted={completed}>{title}</TodoButton>} />
                 <Dropdown.Menu as={<TodoMenu></TodoMenu>}>
-                    <Input title="시간" value={`${time[0]}:${time[1]}`} readOnly />
-                    <Input title="상세 설명" value={description} readOnly />
+                    <InputComponent title="시간" value={`${time[0]}:${time[1]}`} readOnly />
+                    <InputComponent title="상세 설명" value={description} readOnly />
                 </Dropdown.Menu>
             </Dropdown>
         </RelativeContainer>
@@ -53,7 +53,7 @@ const TodoMenu = styled.div`
   padding: 10px;
   transform: translateY(-1.2%) !important;
 
-  animation: ${expandDown} 0.1s forwards;
+  animation: ${expandFromDown} 0.1s forwards;
 `
 
 export default TodoComponent;

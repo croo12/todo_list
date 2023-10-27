@@ -3,14 +3,14 @@ import styled from "styled-components"
 
 type InputProps = React.DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> & {};
 
-const Input = (props: InputProps) => {
+const InputComponent = (props: InputProps) => {
 
     const {title, required} = props;
 
     return (
         <Container>
             {title && <Title>{title}{required && <Star>*</Star>}</Title>}
-            <input {...props} />
+            <StyledInput {...props} />
         </Container>
     )
 }
@@ -23,6 +23,7 @@ gap: 10px;
 
 const Title = styled.div`
 font-size: 1rem;
+color: black;
 `
 
 const Star = styled.span`
@@ -30,4 +31,24 @@ font-size: 1rem;
 color: tomato;
 `
 
-export default Input;
+const StyledInput = styled.input`
+  padding: 10px 15px;
+  font-size: 16px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #333;
+  transition: border-color 0.3s, box-shadow 0.3s;
+
+  &:focus {
+    border-color: #007bff; 
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    outline: none;
+  }
+
+  &:disabled {
+    background-color: #f1f1f1; 
+    cursor: not-allowed;
+`;
+
+export default InputComponent;

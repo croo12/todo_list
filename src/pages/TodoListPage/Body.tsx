@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import TodoComponent from "../../components/Todo";
+import TodoComponent from "../../components/TodoComponent";
 import { FlexContainer } from "../../ui/Container/FlexContainer";
 import { invoke } from "@tauri-apps/api/tauri";
 import { Todo } from "../../types/Todo";
@@ -29,9 +29,9 @@ const Body = ({ date }: Props) => {
     }, [date])
 
     return (
-        <FlexContainer>
+        <FlexContainer style={{gap: 0}}>
             {todoList.length ? todoList.map(todo => <TodoComponent todo={todo}></TodoComponent>) : <div>텅~</div>}
-            <AddButton date={date} />
+            <AddButton date={date} getTodoList={getTodoList} />
         </FlexContainer>
     )
 };

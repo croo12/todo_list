@@ -1,3 +1,4 @@
+import styled from "styled-components";
 import useDate from "../../hooks/useDate";
 import Body from "./Body";
 import Header from "./Header";
@@ -7,7 +8,7 @@ const TodoListPage = () => {
 
     return (
         <div>
-            <h1>Todo List</h1>
+            <H1>TODO LIST</H1>
             <Header year={date.year} month={date.month} day={date.day} setDate={setDate} />
             <Body date={date} />
         </div>
@@ -15,3 +16,12 @@ const TodoListPage = () => {
 }
 
 export default TodoListPage;
+
+const H1 = styled.h1`
+    color: var(--basic-green);
+    text-shadow: 
+    -1px -1px 0 #3FC98E,  
+    1px -1px 0 #3FC98E,
+    -1px 1px 0 #3FC98E,
+    1px 1px 0 #3FC98E;
+`

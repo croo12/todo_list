@@ -7,17 +7,18 @@ interface Props {
         day: number,
         month: number,
         year: number,
-    }
+    },
+    getTodoList: (date: { year: number, month: number, day: number }) => Promise<void>,
 }
 
-const AddButton = ({date}: Props) => {
+const AddButton = ({ date, getTodoList }: Props) => {
 
     const [visible, toggle] = useToggle();
 
     return (
         <>
             <PlusButton onClick={toggle}>+</PlusButton>
-            <AddTodoForm date={date} visible={visible} toggle={toggle} />
+            <AddTodoForm date={date} visible={visible} toggle={toggle} getTodoList={getTodoList} />
         </>
     );
 }
@@ -25,19 +26,26 @@ const AddButton = ({date}: Props) => {
 export default AddButton;
 
 const PlusButton = styled.button`
-  width: 50px;        // 버튼의 크기. 원하는 크기로 조절 가능
-  height: 50px;
-  background-color: #f7f7f7;  // 버튼의 배경색. 원하는 색상으로 조절 가능
-  border: none;
-  border-radius: 8px;  // 둥근 모서리
+  width: 3rem;
+  height: 3rem;
+  background-color: #f7f7f7;
+  border: 1px solid #dddddd;
+  border-radius: 50%;
   cursor: pointer;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;     // + 모양의 크기
-  color: #333;         // + 모양의 색상
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+
+  margin: 1rem auto;
+  margin-left: 5%;
+  margin-right: auto;
 
   &:hover {
-    background-color: #e9e9e9;  // 호버 효과 시 색상 변경
+    background-color: var(--basic-green);
+    border: 1px solid var(--basic-green);
   }
 `;

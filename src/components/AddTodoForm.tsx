@@ -27,10 +27,11 @@ interface Props {
         day: number,
         month: number,
         year: number,
-    }
+    },
+    getTodoList: (date: {year: number, month: number, day: number}) => Promise<void>,
 }
 
-const AddTodoForm = ({ date, visible, toggle }: Props) => {
+const AddTodoForm = ({ date, visible, toggle, getTodoList }: Props) => {
 
     const [state, setState] = useState<TodoFormState>(defaultState);
 
@@ -39,7 +40,7 @@ const AddTodoForm = ({ date, visible, toggle }: Props) => {
     }, [date]);
 
     const insertTodo = async () => {
-        invoke("insert_todo", {
+        await invoke("insert_todo", {
             title: state.title,
             time: state.time,
             description: state.description,
@@ -47,6 +48,7 @@ const AddTodoForm = ({ date, visible, toggle }: Props) => {
             month: date.month,
             year: date.year,
         });
+        getTodoList(date);
     }
 
     return (

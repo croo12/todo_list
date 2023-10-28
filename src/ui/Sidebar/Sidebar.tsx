@@ -10,7 +10,7 @@ interface Props {
 
 const RightSidebarComponent = ({ visible, children }: Props) => {
 
-    if (visible) {
+    if (!visible) {
         return null;
     }
 

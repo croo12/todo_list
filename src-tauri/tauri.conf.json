@@ -36,11 +36,15 @@
     "windows": [
       {
         "fullscreen": false,
-        "resizable": true,
-        "title": "todoList",
-        "width": 800,
+        "resizable": false,
+        "title": "TodoList",
+        "width": 900,
         "height": 600
       }
-    ]
+    ],
+    "systemTray": {
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": true
+    }
   }
 }

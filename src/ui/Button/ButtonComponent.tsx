@@ -12,7 +12,7 @@ const ButtonComponent = ({ children, ...props }
 
 const StyledButton = styled.button`
 padding: 10px 20px;
-background-color: #3498db;
+background-color: var(--basic-green);
 border: none;
 border-radius: 5px;
 color: white;
@@ -20,7 +20,8 @@ cursor: pointer;
 transition: transform 0.3s;
 
 &:hover {
-    transform: scale(1.1);
+    transform: scale(1.01);
+    background-color: var(--dark-green);
 }
 `;
 

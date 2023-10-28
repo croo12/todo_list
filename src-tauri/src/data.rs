@@ -1,4 +1,5 @@
 use serde;
+use tauri::api::path::data_dir;
 use std::{self, fs, io::{Read, Write}};
 
 #[derive(serde::Serialize, serde::Deserialize, Debug)]
@@ -76,7 +77,9 @@ pub fn write_todo(year: i32, month: i32, day: i32, todo: Todo) -> anyhow::Result
 }
 
 fn make_file_name(year: i32, month: i32, day: i32) -> String {
-    format!("todos/{:04}-{:02}-{:02}_todo.json", year, month, day)
+    let data_dir = data_dir().expect("not found data dir");
+    let dir = data_dir.join(format!("todos/{:04}-{:02}-{:02}_todo.json", year, month, day));
+    dir.to_string_lossy().to_string()
 }
 
 fn create_dir_if_not_exists(path: &str) -> anyhow::Result<()> {

@@ -31,7 +31,7 @@ const DateContainer = styled.div`
 
 const Button = styled.button`
   padding: 8px 16px;
-  background-color: #3498db;
+  background-color: var(--basic-green);
   border: none;
   border-radius: 5px;
   color: white;
@@ -39,7 +39,7 @@ const Button = styled.button`
   transition: background-color 0.3s;
 
   &:hover {
-    background-color: #2980b9;
+    background-color: var(--dark-green);
   }
 `;
 

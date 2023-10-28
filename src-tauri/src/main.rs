@@ -41,7 +41,10 @@ fn get_todo(year: i32, month: i32, day: i32) -> Vec<Todo> {
 }
 
 fn main() {
+    let system_tray = tauri::SystemTray::new();
+
     tauri::Builder::default()
+        .system_tray(system_tray)
         .invoke_handler(tauri::generate_handler![greet, get_todo, insert_todo])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

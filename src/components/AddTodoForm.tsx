@@ -7,15 +7,19 @@ import { FlexContainer } from "../ui/Container/FlexContainer";
 import styled from "styled-components";
 import Button from "../ui/Button";
 import { invoke } from "@tauri-apps/api/tauri";
+import DateSelector from "./DateSelector";
+import TimeSelector from "./TimeSelector";
 
 type TodoFormState = {
     title: string;
+    date: Date;
     time: [number, number];
     description: string;
 }
 
 const defaultState: TodoFormState = {
     title: "",
+    date: new Date(),
     time: [0, 0],
     description: "",
 }
@@ -28,25 +32,32 @@ interface Props {
         month: number,
         year: number,
     },
-    getTodoList: (date: {year: number, month: number, day: number}) => Promise<void>,
+    getTodoList: (date: { year: number, month: number, day: number }) => Promise<void>,
 }
 
 const AddTodoForm = ({ date, visible, toggle, getTodoList }: Props) => {
 
-    const [state, setState] = useState<TodoFormState>(defaultState);
+    const [state, setState] = useState<TodoFormState>({
+        ...defaultState,
+        date: new Date(date.year, date.month - 1, date.day)
+    });
 
     useEffect(() => {
         setState(defaultState);
     }, [date]);
 
     const insertTodo = async () => {
+        const year = state.date.getFullYear();
+        const month = state.date.getMonth() + 1;
+        const day = state.date.getDate();
+        const calcedTime = new Date(year, month - 1, day, state.time[0], state.time[1]);
+        
+        console.log(calcedTime.getTime());
+
         await invoke("insert_todo", {
             title: state.title,
-            time: state.time,
+            deadline: calcedTime.getTime(),
             description: state.description,
-            day: date.day,
-            month: date.month,
-            year: date.year,
         });
         getTodoList(date);
     }
@@ -66,33 +77,37 @@ const AddTodoForm = ({ date, visible, toggle, getTodoList }: Props) => {
                         name="title"
                         placeholder="할 일을 입력하세요"
                         value={state.title}
-                        onChange={(e) => setState({...state, title: e.target.value })}
+                        onChange={(e) => setState({ ...state, title: e.target.value })}
                         required
                     />
                 </FlexContainer>
-                <FlexContainer $vertical>
-                    <InputComponent
-                        title="시"
-                        type="number"
-                        value={state.time[0]}
-                        onChange={(e) => setState({...state, time: [e.target.valueAsNumber, state.time[1]] })}
-                    />
-                    <Span>:</Span>
-                    <InputComponent
-                        title="분"
-                        type="number"
-                        value={state.time[1]}
-                        onChange={(e) => setState({...state, time: [state.time[0], e.target.valueAsNumber] })}
-                    />
+                <FlexContainer>
+                    <DateSelector
+                        year={state.date.getFullYear()}
+                        month={state.date.getMonth() + 1}
+                        day={state.date.getDate()}
+                        setDate={({ year, month, day }: {
+                            day: number,
+                            month: number,
+                            year: number,
+                        }) => {
+                            setState({ ...state, date: new Date(year, month - 1, day) });
+                        }} />
+                </FlexContainer>
+                <FlexContainer>
+                    <TimeSelector
+                        time={{hour: state.time[0], minute: state.time[1]}}
+                        setTime={(item: {hour: number, minute: number}) => setState({...state, time: [item.hour, item.minute] })} 
+                        />
                 </FlexContainer>
                 <FlexContainer>
                     <InputComponent
                         title="상세 설명"
                         type="text"
-                        name="description" 
+                        name="description"
                         placeholder="상세 설명을 입력하세요"
                         value={state.description}
-                        onChange={(e) => setState({...state, description: e.target.value })}
+                        onChange={(e) => setState({ ...state, description: e.target.value })}
                     />
                 </FlexContainer>
                 <FlexContainer>

@@ -3,7 +3,6 @@ const ModalComponent = () => {
 
     return (
         <div>
-            
         </div>
     )
 }

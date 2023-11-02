@@ -27,6 +27,8 @@ const DateContainer = styled.div`
   align-items: center;
   justify-content: center;
   gap: 10px;
+
+  position: relative;
 `;
 
 const Button = styled.button`

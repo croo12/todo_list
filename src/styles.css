@@ -15,10 +15,16 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 
+  --basic-black: #333;
+
   --basic-green: #3EE498;
   --dark-green: #3FC98E;
+
+  --basic-red: red;
+
   --light-gray: #dddddd;
   --basic-gray: #E3E3E5;
+  --dark-gray: #DFDFDF;
 }
 
 .container {

@@ -1,10 +1,20 @@
+import { ReactNode, useState } from "react";
+import ReactDOM from "react-dom";
 import styled from "styled-components";
+
 import Dropdown from "../ui/Dropdown";
 import useCalendar from "../hooks/useCalendar";
-import { ReactNode } from "react";
-import { RelativeContainer } from "../ui/Container/RelativeContainer";
+import { FlexContainer } from "../ui/Container/FlexContainer";
+import Button from "../ui/Button";
+import { Overlay } from "../ui/Modal/Overlay";
+import { FixedContainer } from "../ui/Container/FixedContainer";
 
-type Props = {
+type Month = {
+    year: number,
+    month: number,
+}
+
+interface Props {
     year: number,
     month: number,
     day: number,
@@ -13,7 +23,8 @@ type Props = {
 
 const DateSelector = ({ year, month, day, setDate }: Props) => {
 
-    const { days, calendar } = useCalendar({ year, month });
+    const [date, setter] = useState<Month>({ year, month });
+    const { days, calendar } = useCalendar(date);
 
     const onSelect = (item: string) => {
         const ymd = item.split("-").map(Number);
@@ -21,61 +32,103 @@ const DateSelector = ({ year, month, day, setDate }: Props) => {
     }
 
     return (
-        <RelativeContainer>
-            <Dropdown selected={`${year}-${month}-${day}`} onSelect={onSelect}>
-                <Dropdown.Trigger as={<DateDisplay>{`${year}-${month}-${day}`}</DateDisplay>} />
-                <Dropdown.Menu as={
-                    <CalendarMenu days={days}>{ }</CalendarMenu>
-                }>
-                    {calendar.map((item, index) => {
-                        return (
-                            <tr key={`calendar_item_${index}`}>
-                                {item.map((day) => {
-                                    return (
-                                        <Dropdown.Item
-                                            key={day.toDateString()}
-                                            as={<StyledCell $clickable></StyledCell>}
-                                            value={`${day.getFullYear()}-${day.getMonth() + 1}-${day.getDate()}`}
+
+        <Dropdown selected={`${year}-${month}-${day}`} onSelect={onSelect}>
+            <Dropdown.Trigger as={<DateDisplay>{`${year}-${month}-${day}`}</DateDisplay>} />
+            <Dropdown.Menu as={
+                <CalendarMenu days={days} date={date} setter={setter}>{ }</CalendarMenu>
+            }>
+                {ReactDOM.createPortal(
+                    <Dropdown.Item as={<Overlay />} value={`${year}-${month}-${day}`} />
+                    , document.body)}
+                {calendar.map((item, index) => {
+                    return (
+                        <tr key={`calendar_item_${index}`}>
+                            {item.map((day) => {
+                                return (
+                                    <Dropdown.Item
+                                        key={day.toDateString()}
+                                        as={<StyledCell $clickable></StyledCell>}
+                                        value={`${day.getFullYear()}-${day.getMonth() + 1}-${day.getDate()}`}
+                                    >
+                                        <DateText
+                                            $isThisMonth={day.getMonth() + 1 === date.month}
+                                            $isWeekend={day.getDay() === 0 || day.getDay() === 6}
                                         >
-                                            <DateText
-                                                $isThisMonth={day.getMonth() + 1 === month}
-                                                $isWeekend={day.getDay() === 0 || day.getDay() === 6}
-                                            >
-                                                {day.getDate()}
-                                            </DateText>
-                                        </Dropdown.Item>
-                                    )
-                                })}
-                            </tr>
-                        )
-                    })}
-                </Dropdown.Menu>
-            </Dropdown>
-        </RelativeContainer>
+                                            {day.getDate()}
+                                        </DateText>
+                                    </Dropdown.Item>
+                                )
+                            })}
+                        </tr>
+                    )
+                })}
+
+            </Dropdown.Menu>
+        </Dropdown>
     )
 }
 
 export default DateSelector;
 
-const CalendarMenu = ({ days, children }: { days: string[], children: ReactNode }) => {
+const CalendarMenu = ({ days, date, setter, children }:
+    { days: string[], date: Month, setter: React.Dispatch<React.SetStateAction<Month>>, children: ReactNode }) => {
 
     return (
-        <Table>
-            <THead>
-                <tr>
-                    {days.map((day) => (
-                        <Th key={day} >
-                            {day}
-                        </Th>
-                    ))}
-                </tr>
-            </THead>
-            <tbody>
-                {children}
-            </tbody>
-        </Table>
+        ReactDOM.createPortal(
+            (<FixedContainer>
+                <FlexContainer $vertical style={{ justifyContent: "center" }}>
+                    <Button onClick={
+                        (e: React.MouseEvent) => {
+                            e.preventDefault();
+
+                            if (date.month === 1)
+                                setter(prev => ({ year: prev.year - 1, month: 12 }));
+                            else
+                                setter(prev => ({ ...prev, month: prev.month - 1 }));
+                        }
+                    }>←</Button>
+                    <Span >{`${date.year}.${date.month}`}</Span>
+                    <Button onClick={
+                        (e: React.MouseEvent) => {
+                            e.preventDefault();
+
+                            if (date.month === 12)
+                                setter(prev => ({ year: prev.year + 1, month: 1 }));
+                            else
+                                setter(prev => ({ ...prev, month: prev.month + 1 }));
+                        }
+                    }>→</Button>
+                </FlexContainer>
+                <Table>
+                    <THead>
+                        <tr>
+                            {days.map((day) => (
+                                <Th key={day} >
+                                    {day}
+                                </Th>
+                            ))}
+                        </tr>
+                    </THead>
+                    <tbody>
+                        {children}
+                    </tbody>
+                </Table>
+            </FixedContainer>
+        ), document.body)
     )
 }
+
+
+const Span = styled.span`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 24px;
+    font-weight: 600;
+    color: black;
+`;
 
 const DateDisplay = styled.button`
   display: inline-block;
@@ -95,17 +148,12 @@ const DateDisplay = styled.button`
 `;
 
 const Table = styled.table`
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-
     width: 100%;
     min-width: 40rem; 
     border-collapse: collapse;
     margin: 20px auto;
 
-    z-index: 1000;
+
 `
 
 const THead = styled.thead`

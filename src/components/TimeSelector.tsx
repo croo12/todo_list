@@ -1,6 +1,5 @@
 import { ReactNode, useState } from "react";
 import Dropdown from "../ui/Dropdown"
-import InputComponent from "../ui/Input/InputComponent";
 import ReactDOM from "react-dom";
 import { Overlay } from "../ui/Modal/Overlay";
 import { FixedContainer } from "../ui/Container/FixedContainer";

@@ -6,6 +6,8 @@ use tauri::Manager;
 
 mod data;
 
+type UncompletedTodos = std::sync::Arc<std::sync::RwLock<data::UncompletedTodo>>;
+
 #[derive(Clone, serde::Serialize, serde::Deserialize)]
 struct Payload {}
 
@@ -25,7 +27,7 @@ fn toggle_completed(
     id: i64,
     deadline: i64,
     is_completed: bool,
-    state: tauri::State<data::UncompletedTodo>,
+    state: tauri::State<UncompletedTodos>,
 ) {
     let updated_todo = data::TodoUpdate {
         id,
@@ -35,7 +37,7 @@ fn toggle_completed(
     };
 
     if !is_completed {
-        state.update_todo(updated_todo);
+        state.write().unwrap().update_todo(updated_todo);
     } else {
         match data::update_completed_todo(updated_todo) {
             Ok(_) => {}
@@ -51,28 +53,26 @@ fn insert_todo(
     title: &str,
     deadline: i64,
     description: &str,
-    state: tauri::State<data::UncompletedTodo>,
+    state: tauri::State<UncompletedTodos>,
 ) {
-    state.add_todo(title, deadline, description);
+    state
+        .write()
+        .unwrap()
+        .add_todo(title, deadline, description);
 }
 
 #[tauri::command]
-fn remove_todo(id: i64, is_completed: bool, state: tauri::State<data::UncompletedTodo>) {
+fn remove_todo(id: i64, is_completed: bool, state: tauri::State<UncompletedTodos>) {
     if is_completed {
         todo!("delete completed todo");
     } else {
-        state.delete_todo(id);
+        state.write().unwrap().delete_todo(id);
     }
 }
 
 #[tauri::command]
-fn get_todo(
-    year: i32,
-    month: i32,
-    day: i32,
-    state: tauri::State<data::UncompletedTodo>,
-) -> Vec<Todo> {
-    let todos = state.get_todos();
+fn get_todo(year: i32, month: i32, day: i32, state: tauri::State<UncompletedTodos>) -> Vec<Todo> {
+    let todos = state.read().unwrap().get_todos();
 
     let completed = match data::read_todo(year, month, day) {
         Ok(todo) => todo,
@@ -91,9 +91,50 @@ fn main() {
     let quit = tauri::CustomMenuItem::new("quit", "Quit");
     let system_tray_menu = tauri::SystemTrayMenu::new().add_item(quit);
 
+    let state = std::sync::Arc::new(std::sync::RwLock::new(data::UncompletedTodo::new()));
+
     tauri::Builder::default()
-        .setup(|_app| Ok(()))
-        .manage(data::UncompletedTodo::new())
+        .manage(state.clone())
+        .setup(|app| {
+            let window = app.get_window("main").unwrap();
+            let identifier = app.config().tauri.bundle.identifier.clone();
+
+            let _spawn = std::thread::spawn(move || {
+                let mut delta_time = chrono::Local::now();
+                let state = state.clone();
+
+                loop {
+                    std::thread::sleep(std::time::Duration::from_secs(2));
+
+                    let todos = state.read().unwrap().get_todos();
+                    let now = chrono::Local::now();
+
+                    todos.iter().for_each(|todo| {
+                        if delta_time.timestamp_millis() <= todo.deadline
+                            && todo.deadline <= now.timestamp_millis()
+                        {
+                            tauri::api::notification::Notification::new(identifier.clone())
+                                .title(todo.title.clone())
+                                .body(format!(
+                                    "{} 시간이 종료되었습니다.\n{}",
+                                    todo.title.clone(),
+                                    todo.description.clone()
+                                ))
+                                .sound("Default")
+                                .show()
+                                .expect("알림을 보낼 수 없습니다.");
+                        }
+                    });
+
+                    delta_time = now;
+
+                    let window: tauri::Window = window.clone();
+                    regenerate_todos(window);
+                }
+            });
+
+            Ok(())
+        })
         .on_window_event(|event| match event.event() {
             tauri::WindowEvent::CloseRequested { api, .. } => {
                 event.window().hide().unwrap();

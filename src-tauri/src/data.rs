@@ -42,8 +42,8 @@ impl UncompletedTodo {
             Ok(()) => {
                 println!("update is completed");
                 let mut list = self.todo_list.write().unwrap();
-                if let Some(todo) = list.iter_mut().find(|t| t.id == updated_todo.id) {
-                    update_todo(todo, updated_todo);
+                if let Some(idx) = list.iter_mut().position(|t| t.id == updated_todo.id) {
+                    list.remove(idx);
                 }
             }
             Err(e) => {
@@ -72,12 +72,12 @@ impl UncompletedTodo {
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Todo {
-    id: i64,
-    title: String,
-    deadline: i64,
-    description: String,
-    completed: bool,
-    registered_at: i64,
+    pub id: i64,
+    pub title: String,
+    pub deadline: i64,
+    pub description: String,
+    pub completed: bool,
+    pub registered_at: i64,
 }
 
 impl Todo {
@@ -93,7 +93,7 @@ impl Todo {
 
 impl Default for Todo {
     fn default() -> Self {
-        let registered_at = chrono::Utc::now().timestamp();
+        let registered_at = chrono::Local::now().timestamp();
 
         Self {
             id: registered_at,
@@ -291,7 +291,7 @@ fn delete_uncompleted_todo(id: i64) -> anyhow::Result<()> {
 }
 
 fn timestamp_to_date(timestamp: i64) -> anyhow::Result<(i32, i32, i32)> {
-    if let chrono::LocalResult::Single(date) = chrono::Utc.timestamp_millis_opt(timestamp) {
+    if let chrono::LocalResult::Single(date) = chrono::Local.timestamp_millis_opt(timestamp) {
         Ok((date.year(), date.month() as i32, date.day() as i32))
     } else {
         println!("해당 타임스탬프를 사용할 수 없습니다.");
@@ -316,7 +316,7 @@ fn update_todo(todo: &mut Todo, updated_todo: TodoUpdate) {
         todo.completed = completed;
     };
 
-    todo.registered_at = chrono::Utc::now().timestamp();
+    todo.registered_at = chrono::Local::now().timestamp();
 }
 
 fn write_file(file_name: &str, content: String) -> anyhow::Result<()> {

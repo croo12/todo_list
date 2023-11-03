@@ -61,15 +61,19 @@ const TodoComponent = ({ todo }: TodoProps) => {
 }
 
 const TodoMenu = styled.div`
-  width: 85%;
 
-  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+
+  gap: 1rem;
+  
+  padding: 2rem;
 
   background-color: #f4f4f4;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   border-bottom-left-radius: 1rem;
   border-bottom-right-radius: 1rem;
-  padding: 10px;
   transform: translateY(-1.2%) !important;
 
   animation: ${expandFromDown} 0.1s forwards;

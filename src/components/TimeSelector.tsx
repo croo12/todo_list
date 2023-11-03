@@ -9,115 +9,115 @@ import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import { styled } from "styled-components";
 
 interface Props {
-    time: { hour: number, minute: number };
-    setTime: (time: { hour: number, minute: number }) => void;
+	time: { hour: number, minute: number };
+	setTime: (time: { hour: number, minute: number }) => void;
 }
 
 const TimeSelector = ({ time, setTime }: Props) => {
 
-    const valueAs = `${time.hour < 10 ? `0${time.hour}` : time.hour}:${time.minute < 10 ? `0${time.minute}` : time.minute}`;
-    const [tmpTime, setTmpTime] = useState<{ hour: number, minute: number }>(time);
+	const valueAs = `${time.hour < 10 ? `0${time.hour}` : time.hour}:${time.minute < 10 ? `0${time.minute}` : time.minute}`;
+	const [tmpTime, setTmpTime] = useState<{ hour: number, minute: number }>(time);
 
-    return (
-        <Dropdown selected={valueAs} onSelect={(item) => {
-            const [hour, minute] = item.split(":");
-            setTime({ hour: parseInt(hour), minute: parseInt(minute) });
-        }}>
-            <Dropdown.Trigger as={<TimeDisplay >{valueAs}</TimeDisplay>} />
-            <Dropdown.Menu as={<TimeMenu time={tmpTime} setTime={setTmpTime}>{ }</TimeMenu>}>
-                {ReactDOM.createPortal(
-                    <Dropdown.Item as={<Overlay />} value={valueAs} />,
-                    document.body
-                )}
-                <Dropdown.Item value={`${tmpTime.hour}:${tmpTime.minute}`}>Done</Dropdown.Item>
-            </Dropdown.Menu>
-        </Dropdown>
-    )
+	return (
+		<Dropdown selected={valueAs} onSelect={(item) => {
+			const [hour, minute] = item.split(":");
+			setTime({ hour: parseInt(hour), minute: parseInt(minute) });
+		}}>
+			<Dropdown.Trigger as={<TimeDisplay >{valueAs}</TimeDisplay>} />
+			<Dropdown.Menu as={<TimeMenu time={tmpTime} setTime={setTmpTime}>{ }</TimeMenu>}>
+				{ReactDOM.createPortal(
+					<Dropdown.Item as={<Overlay />} value={valueAs} />,
+					document.body
+				)}
+				<Dropdown.Item value={`${tmpTime.hour}:${tmpTime.minute}`}>Done</Dropdown.Item>
+			</Dropdown.Menu>
+		</Dropdown>
+	)
 }
 
 const TimeMenu = ({ time, setTime, children }: {
-    time: { hour: number, minute: number },
-    setTime: React.Dispatch<React.SetStateAction<{
-        hour: number;
-        minute: number;
-    }>>,
-    children: ReactNode
+	time: { hour: number, minute: number },
+	setTime: React.Dispatch<React.SetStateAction<{
+		hour: number;
+		minute: number;
+	}>>,
+	children: ReactNode
 }
 ) => {
-    const { hour, minute } = time;
-    const calculatedHour = hour % 12 || 12;
+	const { hour, minute } = time;
+	const calculatedHour = hour % 12 || 12;
 
-    const addHour = () => {
-        setTime(prev => {
-            if (prev.hour === 23)
-                return { hour: 0, minute: prev.minute };
-            return { hour: prev.hour + 1, minute: prev.minute }
-        })
-    };
+	const addHour = () => {
+		setTime(prev => {
+			if (prev.hour === 23)
+				return { hour: 0, minute: prev.minute };
+			return { hour: prev.hour + 1, minute: prev.minute }
+		})
+	};
 
-    const subtractHour = () => {
-        setTime(prev => {
-            if (prev.hour === 0)
-                return { hour: 23, minute: prev.minute };
-            return { hour: prev.hour - 1, minute: prev.minute }
-        })
-    };
+	const subtractHour = () => {
+		setTime(prev => {
+			if (prev.hour === 0)
+				return { hour: 23, minute: prev.minute };
+			return { hour: prev.hour - 1, minute: prev.minute }
+		})
+	};
 
-    const addMinute = () => {
-        setTime(prev => {
-            if (prev.minute === 55 && prev.hour !== 23)
-                return { hour: prev.hour + 1, minute: 0 }
-            if (prev.minute === 55 && prev.hour === 23)
-                return { hour: 0, minute: 0 };
-            return { hour: prev.hour, minute: prev.minute + 5 }
-        })
-    };
+	const addMinute = () => {
+		setTime(prev => {
+			if (prev.minute === 55 && prev.hour !== 23)
+				return { hour: prev.hour + 1, minute: 0 }
+			if (prev.minute === 55 && prev.hour === 23)
+				return { hour: 0, minute: 0 };
+			return { hour: prev.hour, minute: prev.minute + 5 }
+		})
+	};
 
-    const subtractMinute = () => {
-        setTime(prev => {
-            if (prev.minute === 0 && prev.hour !== 0)
-                return { hour: prev.hour - 1, minute: 55 }
-            if (prev.minute === 0 && prev.hour === 0)
-                return { hour: 23, minute: 55 };
-            return { hour: prev.hour, minute: prev.minute - 5 }
-        })
-    };
+	const subtractMinute = () => {
+		setTime(prev => {
+			if (prev.minute === 0 && prev.hour !== 0)
+				return { hour: prev.hour - 1, minute: 55 }
+			if (prev.minute === 0 && prev.hour === 0)
+				return { hour: 23, minute: 55 };
+			return { hour: prev.hour, minute: prev.minute - 5 }
+		})
+	};
 
-    return ReactDOM.createPortal(
-        <FixedContainer>
-            <FlexContainer $vertical>
-                <FlexContainer>
-                    <NotBorderButton type="button" onClick={addHour}>
-                        <FontAwesomeIcon color={'var(--basic-green)'} icon={faChevronUp} />
-                    </NotBorderButton>
-                    <TimeBox>
-                        {calculatedHour < 10 ? `0${calculatedHour}` : calculatedHour}
-                    </TimeBox>
-                    <NotBorderButton type="button" onClick={subtractHour}>
-                        <FontAwesomeIcon color={'var(--basic-green)'} icon={faChevronDown} />
-                    </NotBorderButton>
-                </FlexContainer>
-                <FlexContainer>
-                    <NotBorderButton type="button" onClick={addMinute}>
-                        <FontAwesomeIcon color={'var(--basic-green)'} icon={faChevronUp} />
-                    </NotBorderButton>
-                    <TimeBox>
-                        {minute < 10 ? `0${minute}` : minute}
-                    </TimeBox>
-                    <NotBorderButton type="button" onClick={subtractMinute}>
-                        <FontAwesomeIcon color={'var(--basic-green)'} icon={faChevronDown} />
-                    </NotBorderButton>
-                </FlexContainer>
-                <FlexContainer style={{ justifyContent: 'center', flex: '1' }}>
-                    <TimeBox>
-                        {hour >= 12 ? "PM" : "AM"}
-                    </TimeBox>
-                </FlexContainer>
-            </FlexContainer>
-            <FlexContainer>
-                {children}
-            </FlexContainer>
-        </FixedContainer>, document.body);
+	return ReactDOM.createPortal(
+		<FixedContainer>
+			<FlexContainer $vertical>
+				<FlexContainer>
+					<NotBorderButton type="button" onClick={addHour}>
+						<FontAwesomeIcon color={'var(--basic-green)'} icon={faChevronUp} />
+					</NotBorderButton>
+					<TimeBox>
+						{calculatedHour < 10 ? `0${calculatedHour}` : calculatedHour}
+					</TimeBox>
+					<NotBorderButton type="button" onClick={subtractHour}>
+						<FontAwesomeIcon color={'var(--basic-green)'} icon={faChevronDown} />
+					</NotBorderButton>
+				</FlexContainer>
+				<FlexContainer>
+					<NotBorderButton type="button" onClick={addMinute}>
+						<FontAwesomeIcon color={'var(--basic-green)'} icon={faChevronUp} />
+					</NotBorderButton>
+					<TimeBox>
+						{minute < 10 ? `0${minute}` : minute}
+					</TimeBox>
+					<NotBorderButton type="button" onClick={subtractMinute}>
+						<FontAwesomeIcon color={'var(--basic-green)'} icon={faChevronDown} />
+					</NotBorderButton>
+				</FlexContainer>
+				<FlexContainer style={{ justifyContent: 'center', flex: '1' }}>
+					<TimeBox>
+						{hour >= 12 ? "PM" : "AM"}
+					</TimeBox>
+				</FlexContainer>
+			</FlexContainer>
+			<FlexContainer>
+				{children}
+			</FlexContainer>
+		</FixedContainer>, document.body);
 }
 
 export default TimeSelector;

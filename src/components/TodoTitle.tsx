@@ -5,72 +5,72 @@ import styled from "styled-components";
 import { FlexContainer } from "../ui/Container/FlexContainer";
 
 interface Props {
-    title: string,
-    completed: boolean,
-    date: Date,
-    onClick?: (e: React.MouseEvent) => void,
-    onChecked: (e: React.MouseEvent) => void,
-    onRemove: (e: React.MouseEvent) => void
+	title: string,
+	completed: boolean,
+	date: Date,
+	onClick?: (e: React.MouseEvent) => void,
+	onChecked: (e: React.MouseEvent) => void,
+	onRemove: (e: React.MouseEvent) => void
 }
 
 const TodoTitle = ({ title, completed, date, onClick, onChecked, onRemove }: Props) => {
-    const now = new Date();
-    const timeDiff = date.getTime() - now.getTime();
-    const expired = timeDiff < 0;
+	const now = new Date();
+	const timeDiff = date.getTime() - now.getTime();
+	const expired = timeDiff < 0;
 
-    const message = leftDateMessage(timeDiff);
+	const message = leftDateMessage(timeDiff);
 
-    return (
-        <TodoContainer $isCompleted={completed}>
-            <ButtonLayout onClick={onChecked}>
-                <FontAwesomeIcon icon={faCheck} color={completed ? "var(--basic-green)" : "var(--light-gray)"} />
-            </ButtonLayout>
-            <TodoText onClick={onClick}>
-                <Title $isCompleted={completed}>
-                    {title}
-                </Title>
-                <FlexContainer $vertical style={{ alignItems: "center", gap: "5px" }}>
-                    {!completed && (
-                        <>
-                            <FontAwesomeIcon icon={faClock} color={expired ? "var(--basic-red)" : "var(--basic-green)"} type="regular" />
-                            <LeftTimeSpan $expired={expired}>{expired ? "expired" : message}</LeftTimeSpan>
-                        </>
-                    )}
-                </FlexContainer>
-            </TodoText>
-            <ButtonLayout onClick={onRemove}>
-                <FontAwesomeIcon icon={completed ? faTrashCan : faXmark} color={completed ? "var(--light-gray)" : "var(--basic-gray)"} />
-            </ButtonLayout>
-        </TodoContainer>
+	return (
+		<TodoContainer $isCompleted={completed}>
+			<ButtonLayout onClick={onChecked}>
+				<FontAwesomeIcon icon={faCheck} color={completed ? "var(--basic-green)" : "var(--light-gray)"} />
+			</ButtonLayout>
+			<TodoText onClick={onClick}>
+				<Title $isCompleted={completed}>
+					{title}
+				</Title>
+				<FlexContainer $vertical style={{ alignItems: "center", gap: "5px" }}>
+					{!completed && (
+						<>
+							<FontAwesomeIcon icon={faClock} color={expired ? "var(--basic-red)" : "var(--basic-green)"} type="regular" />
+							<LeftTimeSpan $expired={expired}>{expired ? "expired" : message}</LeftTimeSpan>
+						</>
+					)}
+				</FlexContainer>
+			</TodoText>
+			<ButtonLayout onClick={onRemove}>
+				<FontAwesomeIcon icon={completed ? faTrashCan : faXmark} color={completed ? "var(--light-gray)" : "var(--basic-gray)"} />
+			</ButtonLayout>
+		</TodoContainer>
 
-    )
+	)
 }
 
 export default TodoTitle;
 
 const leftDateMessage = (timeDiff: number) => {
-    const { day, hour, minute } = calcLeftDate(timeDiff);
+	const { day, hour, minute } = calcLeftDate(timeDiff);
 
-    if (day !== 0)
-        return `${day} days`;
+	if (day !== 0)
+		return `${day} days`;
 
-    if (hour !== 0)
-        return `${hour} hours`;
+	if (hour !== 0)
+		return `${hour} hours`;
 
-    return `${minute ? minute : 1} minutes`;
+	return `${minute ? minute : 1} minutes`;
 };
 
 const calcLeftDate = (timeDiff: number) => {
-    const second = timeDiff / 1000;
-    const minute = second / 60;
-    const hour = minute / 60;
-    const day = hour / 24;
+	const second = timeDiff / 1000;
+	const minute = second / 60;
+	const hour = minute / 60;
+	const day = hour / 24;
 
-    return {
-        day: Math.floor(day),
-        hour: Math.floor(hour % 24),
-        minute: Math.floor(minute % 60),
-    }
+	return {
+		day: Math.floor(day),
+		hour: Math.floor(hour % 24),
+		minute: Math.floor(minute % 60),
+	}
 }
 
 const ButtonLayout = styled.button`
@@ -109,12 +109,12 @@ const TodoText = styled.div`
 `
 
 const Title = styled.span<{ $isCompleted: boolean }>`
-    color: ${props => props.$isCompleted? "var(--dark-gray)" : "var(--basic-black)"};
+    color: ${props => props.$isCompleted ? "var(--dark-gray)" : "var(--basic-black)"};
 
 `
 
 const TodoContainer = styled.div<{ $isCompleted: boolean }>`
-  width: 80%;
+  width: 100%;
   display: flex;
   justify-content: space-between;
 

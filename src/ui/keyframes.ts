@@ -32,3 +32,14 @@ to {
   transform-origin: right;
 }
 `;
+
+export const shirimpFromRight = keyframes`
+from {
+  transform: scaleX(1);
+  transform-origin: right;
+}
+to {
+  transform: scaleX(0);
+  transform-origin: right;
+}
+`;

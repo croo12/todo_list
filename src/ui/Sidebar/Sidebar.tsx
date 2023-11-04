@@ -1,43 +1,53 @@
 import { ReactNode } from "react";
 import { createPortal } from "react-dom";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { expandFromRight } from "../keyframes";
+import useAnimation from "../../hooks/useAnimation";
 
 interface Props {
-    visible: boolean;
-    children: ReactNode;
+	visible: boolean;
+	children?: ReactNode;
 }
 
 const RightSidebarComponent = ({ visible, children }: Props) => {
 
-    if (!visible) {
-        return null;
-    }
+	const [visibleCondition, transitionEndHandler] = useAnimation(visible);
 
-    return (
-        createPortal(
-            <StyledSidebar>
-                {children}
-            </StyledSidebar>
-            , document.body, "left-sidebar")
-    );
+	if (!visibleCondition) {
+		return null;
+	}
+
+	return (
+		createPortal(
+			<StyledSidebar $trigger={visible} onTransitionEnd={transitionEndHandler}>
+				{children}
+			</StyledSidebar>
+			, document.body, "right-sidebar")
+	);
 }
 
 export default RightSidebarComponent;
 
-const StyledSidebar = styled.div`
+const StyledSidebar = styled.div<{ $trigger: boolean }>`
   position: fixed;
   top: 0;
   right: 0;
   bottom: 0;
-  width: 80%;  // 화면의 80% 크기
+  width: 80%;
   background-color: #f7f7f7;
   overflow-y: auto;
   border-left: 1px solid #ddd;
-  animation: ${expandFromRight} 0.3s forwards;
 
-  form {
-    padding: 20px;  // form에 대한 기본 패딩
-    // form에 대한 추가적인 스타일링이 필요하다면 여기에 추가하세요
-  }
+	
+	${ props => props.$trigger ? 
+		css`animation-name: ${expandFromRight};
+		animation-duration: 0.1s;
+		animation-fill-mode: forwards;
+		animation-iteration-count: 1;`
+		 :
+		css`transform-origin: right;
+		transition: scale 0.1s ease-in-out;`
+	}
+
+	scale: ${props => props.$trigger ? `1`: `0`} 1;
 `;

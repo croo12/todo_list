@@ -1,7 +1,9 @@
 import { InputHTMLAttributes } from "react";
 import styled from "styled-components"
 
-type InputProps = React.DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> & {};
+interface InputProps extends React.DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {
+  
+};
 
 const InputComponent = (props: InputProps) => {
 
@@ -22,6 +24,7 @@ gap: 10px;
 `;
 
 const Title = styled.div`
+text-align: left;
 font-size: 1rem;
 color: black;
 `

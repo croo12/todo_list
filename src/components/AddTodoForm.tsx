@@ -9,6 +9,7 @@ import Button from "../ui/Button";
 import { invoke } from "@tauri-apps/api/tauri";
 import DateSelector from "./DateSelector";
 import TimeSelector from "./TimeSelector";
+import TextareaComponent from "../ui/Input/TextareaComponent";
 
 type TodoFormState = {
 	title: string;
@@ -101,9 +102,8 @@ const AddTodoForm = ({ date, visible, toggle }: Props) => {
 					/>
 				</FlexContainer>
 				<FlexContainer>
-					<InputComponent
+					<TextareaComponent
 						title="상세 설명"
-						type="text"
 						name="description"
 						placeholder="상세 설명을 입력하세요"
 						value={state.description}
@@ -122,14 +122,4 @@ export default AddTodoForm;
 
 const StyledTitle = styled.h1`
     color: black;
-`
-
-const Span = styled.span`
-    font-size: 1rem;
-    font-weight: 600;
-    color: black;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
 `

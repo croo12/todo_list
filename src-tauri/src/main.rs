@@ -40,7 +40,12 @@ fn toggle_completed(
         state.write().unwrap().update_todo(updated_todo);
     } else {
         match data::update_completed_todo(updated_todo) {
-            Ok(_) => {}
+            Ok(Some(todo)) => {
+                state.write().unwrap().todo_list.write().unwrap().push(todo);
+            }
+            Ok(None) => {
+                eprintln!("{}", "Could not find todo with id");
+            }
             Err(e) => {
                 eprintln!("{}", e);
             }
@@ -62,9 +67,16 @@ fn insert_todo(
 }
 
 #[tauri::command]
-fn remove_todo(id: i64, is_completed: bool, state: tauri::State<UncompletedTodos>) {
+fn remove_todo(id: i64, deadline: i64, is_completed: bool, state: tauri::State<UncompletedTodos>) {
     if is_completed {
-        todo!("delete completed todo");
+        match data::delete_completed_todo(id, deadline) {
+            Ok(_) => {
+
+            }
+            Err(e) => {
+                eprintln!("{:?}", e);
+            }
+        }
     } else {
         state.write().unwrap().delete_todo(id);
     }

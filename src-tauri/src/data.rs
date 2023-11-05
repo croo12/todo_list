@@ -180,12 +180,11 @@ pub fn update_uncompleted_todo(updated_todo: TodoUpdate) -> anyhow::Result<()> {
     Ok(())
 }
 
-pub fn update_completed_todo(updated_todo: TodoUpdate) -> anyhow::Result<()> {
+pub fn update_completed_todo(updated_todo: TodoUpdate) -> anyhow::Result<Option<Todo>> {
     let deadline = if let Some(deadline) = updated_todo.deadline {
         deadline
     } else {
-        eprintln!("deadline is not set");
-        return Ok(());
+        return Err(anyhow::anyhow!("deadline is not set"));
     };
 
     let (year, month, day) = timestamp_to_date(deadline)?;
@@ -195,22 +194,28 @@ pub fn update_completed_todo(updated_todo: TodoUpdate) -> anyhow::Result<()> {
         if let Some(idx) = todo_list.iter().position(|t| t.id == updated_todo.id) {
             let mut todo = todo_list.remove(idx);
             update_todo(&mut todo, updated_todo);
-            write_new_todo(todo)?;
+            write_new_todo(todo.clone())?;
 
             let file_name = make_file_name(year, month, day);
             let updated_content = serde_json::to_string(&todo_list)?;
             write_file(&file_name, updated_content)?;
-        };
+
+            Ok(Some(todo))
+        } else {
+            Err(anyhow::anyhow!("not found todo"))
+        }
     } else {
         if let Some(todo) = todo_list.iter_mut().find(|t| t.id == updated_todo.id) {
             update_todo(todo, updated_todo);
-        };
 
-        let updated_content = serde_json::to_string(&todo_list)?;
-        write_file(&make_file_name(year, month, day), updated_content)?;
+            let updated_content = serde_json::to_string(&todo_list)?;
+            write_file(&make_file_name(year, month, day), updated_content)?;
+
+            Ok(None)
+        } else {
+            Err(anyhow::anyhow!("not found todo"))
+        }
     }
-
-    Ok(())
 }
 
 fn read_json_file<T>(file_name: &str) -> anyhow::Result<Option<T>>
@@ -283,6 +288,25 @@ fn delete_uncompleted_todo(id: i64) -> anyhow::Result<()> {
     }
 
     let content: Vec<Todo> = todo_list.into_iter().filter(|t| t.id != id).collect();
+    let updated_content = serde_json::to_string(&content)?;
+
+    write_file(&file_name, updated_content)?;
+
+    Ok(())
+}
+
+pub fn delete_completed_todo(id: i64, deadline: i64) -> anyhow::Result<()> {
+    let (year, month, day) = timestamp_to_date(deadline)?;
+    let file_name = make_file_name(year, month, day);
+    let todo_list: Vec<Todo>;
+
+    if let Ok(content) = read_todo(year, month, day) {
+        todo_list = content;
+    } else {
+        todo_list = Vec::new();
+    }
+
+    let content: Vec<Todo> = todo_list.into_iter().filter(|t| t.id!= id).collect();
     let updated_content = serde_json::to_string(&content)?;
 
     write_file(&file_name, updated_content)?;

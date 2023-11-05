@@ -120,7 +120,7 @@ const TodoContainer = styled.div<{ $isCompleted: boolean }>`
 
   margin: 0 auto; 
   background-color: #f4f4f4;
-  border: 1px solid #dddddd;
+  border: 1px solid var(--light-gray);
   border-bottom: none;
   cursor: pointer;
   transition: background-color 0.3s;

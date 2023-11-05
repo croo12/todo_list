@@ -6,6 +6,7 @@ import { Todo } from "../types/Todo";
 import { expandFromDown } from "../ui/keyframes";
 import TodoTitle from "./TodoTitle";
 import { invoke } from '@tauri-apps/api';
+import TextareaComponent from '../ui/Input/TextareaComponent';
 
 interface TodoProps {
   todo: Todo;
@@ -35,6 +36,7 @@ const TodoComponent = ({ todo }: TodoProps) => {
 
     await invoke("remove_todo", {
       id,
+      deadline,
       isCompleted: completed,
     });
 
@@ -51,10 +53,10 @@ const TodoComponent = ({ todo }: TodoProps) => {
           title="시간"
           value={`${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`}
           readOnly />
-        <InputComponent
+        {description && <TextareaComponent
           title="상세 설명"
           value={description}
-          readOnly />
+          readOnly />}
       </Dropdown.Menu>
     </Dropdown>
   )
@@ -66,17 +68,18 @@ const TodoMenu = styled.div`
   display: flex;
   flex-direction: column;
 
-  gap: 1rem;
-  
   padding: 2rem;
+  gap: 1rem;
 
   background-color: #f4f4f4;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--light-gray);
   border-bottom-left-radius: 1rem;
   border-bottom-right-radius: 1rem;
-  transform: translateY(-1.2%) !important;
 
   animation: ${expandFromDown} 0.1s forwards;
+
+  margin-bottom: 1rem;
 `
 
 export default TodoComponent;

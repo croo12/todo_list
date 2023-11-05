@@ -33,7 +33,8 @@ const StyledSidebar = styled.div<{ $trigger: boolean }>`
   top: 0;
   right: 0;
   bottom: 0;
-  width: 80%;
+  width: 60%;
+	height: 100vh;
   background-color: #f7f7f7;
   overflow-y: auto;
   border-left: 1px solid #ddd;
